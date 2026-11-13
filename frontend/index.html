@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SENTRIX — Smart Disaster Response &amp; SEM Operations Platform</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="sentrix-shell">
+    <!-- Operations Header -->
+    <header class="ops-header">
+      <div class="brand">
+        <div class="radar-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 2a10 10 0 0 1 10 10"/>
+            <circle cx="12" cy="12" r="2"/>
+            <line x1="12" y1="12" x2="19" y2="5"/>
+          </svg>
+        </div>
+        <div class="brand-info">
+          <h1>SENTRIX <span class="badge-sem">DISASTER RESPONSE OPS</span></h1>
+          <p class="brand-sub">STRUCTURAL &amp; ENVIRONMENTAL MONITORING • SEISMIC PGA • RESCUE DISPATCH</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="telemetry-ping">
+          <span class="radar-dot pulse"></span>
+          <span>SEM NETWORK: SYNCHRONIZED</span>
+        </div>
+        <button id="refreshOverviewBtn" class="btn btn-secondary">Sync Telemetry</button>
+      </div>
+    </header>
+
+    <!-- Situational Overview Ribbon -->
+    <section class="overview-ribbon">
+      <div class="stat-card">
+        <span class="stat-label">ACTIVE DISASTER INCIDENTS</span>
+        <span class="stat-val text-red font-mono" id="statIncidents">0</span>
+        <span class="stat-sub">High Severity Operations</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">ONLINE SENSOR NODES</span>
+        <span class="stat-val text-cyan font-mono" id="statSensors">0</span>
+        <span class="stat-sub">PGA, Flume &amp; Thermal</span>
+      </div>
+      <div class="stat-card alert-card">
+        <span class="stat-label">EVACUATION ZONES ACTIVE</span>
+        <span class="stat-val text-amber font-mono" id="statEvacZones">0</span>
+        <span class="stat-sub">Civilian Clear Directives</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">AVAILABLE DISPATCH UNITS</span>
+        <span class="stat-val text-emerald font-mono" id="statUnits">0</span>
+        <span class="stat-sub">SAR, MedEvac &amp; Hazmat</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">CRITICAL TELEMETRY ALERTS</span>
+        <span class="stat-val text-purple font-mono" id="statAlerts">0</span>
+        <span class="stat-sub">Threshold Breaches</span>
+      </div>
+    </section>
+
+    <!-- Tab Navigation -->
+    <nav class="console-tabs">
+      <button class="tab-btn active" data-tab="semSensorsTab">SEM Sensor Telemetry</button>
+      <button class="tab-btn" data-tab="incidentsTab">Active Incidents &amp; Evacuation</button>
+      <button class="tab-btn" data-tab="dispatchTab">First Responder Dispatch</button>
+      <button class="tab-btn" data-tab="broadcastTab">Civil Alert Broadcasts</button>
+    </nav>
+
+    <!-- Workspace Tabs -->
+    <main class="console-workspace">
+      <!-- TAB 1: SENSOR TELEMETRY & INJECTION -->
+      <section class="tab-pane active" id="semSensorsTab">
+        <div class="two-col-layout">
+          <!-- Sensor Fleet List -->
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Structural &amp; Environmental Sensor Fleet</h2>
+              <span class="sub-caption">Real-time PGA accelerometers, reservoir flumes, and thermal scanners</span>
+            </div>
+            <div class="sensor-grid" id="sensorFleetContainer">
+              <!-- Sensor cards rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Telemetry Injection Sandbox -->
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Telemetry Simulation &amp; Ingestion</h2>
+              <span class="sub-caption">Inject simulated seismic or flood anomalies to evaluate SEM alerts</span>
+            </div>
+
+            <form id="ingestForm" class="ops-form">
+              <div class="form-row">
+                <label>Target Sensor</label>
+                <select id="ingestSensorSelect" required>
+                  <!-- Populated dynamically -->
+                </select>
+              </div>
+
+              <div class="form-row">
+                <label>Metric Value (<span id="ingestUnitLabel">g</span>)</label>
+                <input type="number" id="ingestValue" step="0.001" value="0.38" placeholder="e.g. 0.38" required>
+              </div>
+
+              <div class="preset-buttons">
+                <span class="preset-label">Simulation Presets:</span>
+                <button type="button" class="btn btn-xs btn-outline" onclick="setPreset('SEISMIC_QUIET')">Nominal Tremor (0.01g)</button>
+                <button type="button" class="btn btn-xs btn-outline" onclick="setPreset('SEISMIC_CRITICAL')">Major Earthquake (0.45g)</button>
+                <button type="button" class="btn btn-xs btn-outline" onclick="setPreset('FLOOD_CRITICAL')">Dam Flume Surge (7.8m)</button>
+              </div>
+
+              <div class="form-actions" style="margin-top: 1rem;">
+                <button type="submit" class="btn btn-primary">Transmit Sensor Reading</button>
+              </div>
+            </form>
+
+            <div class="eval-result-card" id="ingestResultCard">
+              <span class="eval-title">SEM Engineering Assessment:</span>
+              <pre class="font-mono" id="ingestResultOutput">// Inject a telemetry reading above to inspect the PGA Mercalli assessment or flood hazard evaluation.</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: INCIDENTS & EVACUATION ZONES -->
+      <section class="tab-pane" id="incidentsTab">
+        <div class="two-col-layout">
+          <!-- Incidents Board -->
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Active Incident Command Operations</h2>
+              <button class="btn btn-sm btn-outline" onclick="toggleIncidentModal()">+ Declare Incident</button>
+            </div>
+
+            <!-- Declare Incident Drawer -->
+            <div class="drawer hidden" id="incidentDrawer">
+              <form id="newIncidentForm" class="ops-form">
+                <div class="form-row">
+                  <label>Incident Title</label>
+                  <input type="text" id="incTitle" placeholder="e.g. San Mateo Reservoir Flume Fracture" required>
+                </div>
+                <div class="form-cols">
+                  <div class="form-row">
+                    <label>Disaster Type</label>
+                    <select id="incType">
+                      <option value="EARTHQUAKE">EARTHQUAKE</option>
+                      <option value="FLOOD">FLOOD</option>
+                      <option value="WILDFIRE">WILDFIRE</option>
+                      <option value="COLLAPSE">COLLAPSE</option>
+                    </select>
+                  </div>
+                  <div class="form-row">
+                    <label>Severity</label>
+                    <select id="incSeverity">
+                      <option value="CRITICAL">CRITICAL</option>
+                      <option value="HIGH">HIGH</option>
+                      <option value="MEDIUM">MEDIUM</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-cols">
+                  <div class="form-row">
+                    <label>Latitude</label>
+                    <input type="number" id="incLat" step="0.0001" value="37.5250" required>
+                  </div>
+                  <div class="form-row">
+                    <label>Longitude</label>
+                    <input type="number" id="incLon" step="0.0001" value="-122.3600" required>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <label>Affected Radius (km)</label>
+                  <input type="number" id="incRadius" step="0.5" value="6.0" required>
+                </div>
+                <div class="checkbox-row">
+                  <label><input type="checkbox" id="incEvac" checked> Order Immediate Mandatory Evacuation Zone</label>
+                </div>
+                <div class="form-actions">
+                  <button type="button" class="btn btn-secondary" onclick="toggleIncidentModal()">Cancel</button>
+                  <button type="submit" class="btn btn-primary">Declare Incident</button>
+                </div>
+              </form>
+            </div>
+
+            <div class="incidents-list" id="incidentsContainer">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Situation Awareness & Map Simulator -->
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Evacuation Geo-Fencing &amp; Risk Perimeter</h2>
+              <span class="sub-caption">Geographical cordon calculation based on incident coordinates</span>
+            </div>
+
+            <div class="radar-map-box">
+              <div class="radar-scan-line"></div>
+              <div class="map-grid-overlay">
+                <div class="beacon b-bridge" title="Bay Bridge Pier 3"></div>
+                <div class="beacon b-flume" title="Oakland Estuary Flume"></div>
+                <div class="beacon b-reservoir" title="Crystal Springs Dam"></div>
+                <div class="beacon b-diablo" title="Mount Diablo Ridge"></div>
+                <div class="evac-zone-circle" id="radarEvacCircle"></div>
+              </div>
+            </div>
+
+            <div class="zone-details-card" id="activeZoneDetails">
+              <span class="zone-title font-mono">SELECTED ZONE: INC-SEIS-001 (SF Bay Sector)</span>
+              <p class="zone-info">Coordinates: 37.7983° N, 122.3778° W | Cordon: 7.5 km Radius</p>
+              <p class="zone-status text-amber font-mono">STATUS: MANDATORY EVACUATION IN FORCE</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: FIRST RESPONDER DISPATCH -->
+      <section class="tab-pane" id="dispatchTab">
+        <div class="two-col-layout">
+          <!-- Dispatch Fleet -->
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Emergency Rescue Units Fleet</h2>
+              <span class="sub-caption">Deploy specialized response teams to critical incidents</span>
+            </div>
+
+            <div class="dispatch-list" id="dispatchContainer">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+          <!-- Dispatch Orchestrator -->
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Autonomous Dispatch Proximity Engine</h2>
+              <span class="sub-caption">Calculates distance and urban transit ETA using the Haversine algorithm</span>
+            </div>
+
+            <div class="ops-form">
+              <div class="form-row">
+                <label>Target Incident</label>
+                <select id="dispatchIncidentSelect">
+                  <!-- Populated dynamically -->
+                </select>
+              </div>
+              <button id="calcProximityBtn" class="btn btn-cyan" style="width:100%;">Calculate Nearest Units</button>
+
+              <div class="proximity-results" id="proximityContainer">
+                <div class="empty-state">Select an incident and click "Calculate Nearest Units" to rank rescue teams by transit ETA.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: CIVIL EMERGENCY BROADCASTS -->
+      <section class="tab-pane" id="broadcastTab">
+        <div class="two-col-layout">
+          <!-- Broadcast Composer -->
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Emergency Alert System (EAS) Broadcast</h2>
+              <span class="sub-caption">Transmit civil defense directives to emergency mobile channels</span>
+            </div>
+
+            <form id="broadcastForm" class="ops-form">
+              <div class="form-row">
+                <label>Related Incident ID</label>
+                <select id="broadcastIncidentSelect" required>
+                  <!-- Populated dynamically -->
+                </select>
+              </div>
+              <div class="form-row">
+                <label>Alert Severity Level</label>
+                <select id="broadcastLevel">
+                  <option value="LEVEL_3_CRITICAL">LEVEL 3 — IMMEDIATE THREAT TO LIFE</option>
+                  <option value="LEVEL_2_WARNING">LEVEL 2 — EVACUATION ADVISORY</option>
+                  <option value="LEVEL_1_WATCH">LEVEL 1 — SITUATIONAL WATCH</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label>Alert Headline</label>
+                <input type="text" id="broadcastHeadline" placeholder="MANDATORY EVACUATION ORDER FOR BAY AREA SECTOR 4" required>
+              </div>
+              <div class="form-row">
+                <label>Civilian Instructions</label>
+                <textarea id="broadcastInstructions" rows="4" placeholder="Cease non-emergency transit. Proceed to designated emergency staging shelter at Civic Center. Avoid low-lying embankments." required></textarea>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-red">Broadcast Emergency Directive</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Broadcast History -->
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Transmitted EAS Emergency Directives</h2>
+              <span class="sub-caption">Public alerts logged across all emergency bands</span>
+            </div>
+
+            <div class="broadcasts-list" id="broadcastsContainer">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

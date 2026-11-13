@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  sentrix-platform:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sentrix_platform
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - HOST=0.0.0.0
+      - SQLITE_DB_PATH=/app/data/sentrix.db
+      - LOG_LEVEL=INFO
+    volumes:
+      - sentrix_data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  sentrix_data:
+    driver: local
